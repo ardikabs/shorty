@@ -12,19 +12,17 @@ import (
 
 // URLDefinition represent URL definition from API
 type URLDefinition struct {
-	Count     int64     `json:"count"`
-	CreatedAt time.Time `json:"createdAt"`
-	ID        string    `json:"id"`
-	Target    string    `json:"target"`
-	Password  bool      `json:"password"`
-	ShortURL  string    `json:"shortUrl"`
+	ID       string `json:"id"`
+	Target   string `json:"target"`
+	ShortURL string `json:"shortUrl"`
 }
 
 // API represent KuttIt API service
 type API struct {
-	httpClient *http.Client
-	BaseURL    *url.URL
-	APIToken   string
+	httpClient   *http.Client
+	BaseURL      *url.URL
+	APIToken     string
+	CustomDomain string
 }
 
 // GetListURL will return list of URL from API
@@ -37,7 +35,6 @@ func (api *API) GetListURL() ([]URLDefinition, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", api.APIToken)
 
 	api.httpClient = &http.Client{Timeout: 15 * time.Second}
@@ -68,12 +65,12 @@ func (api *API) SubmitURL(longURL, customURL, password string, reuse bool) (URLD
 
 	payload := struct {
 		Target    string `json:"target"`
-		CustomURL string `json:"customUrl"`
+		CustomURL string `json:"customurl"`
 		Password  string `json:"password"`
 		Reuse     bool   `json:"reuse"`
-	}{
-		Target: longURL,
-	}
+	}{}
+
+	payload.Target = longURL
 
 	if customURL != "" {
 		payload.CustomURL = customURL
@@ -121,20 +118,30 @@ func (api *API) SubmitURL(longURL, customURL, password string, reuse bool) (URLD
 	return url, nil
 }
 
-// DeleteURL will return list of URL from KuttIt provider
+// DeleteURL will return nothing if url successfully deleted
 func (api *API) DeleteURL(targetURL string) error {
 	rel := &url.URL{Path: "/api/url/deleteurl"}
 
-	splitTarget := strings.Split(targetURL, "/")
-	id := splitTarget[len(splitTarget)-1]
+	var id string
+	if strings.ContainsAny(targetURL, "/") {
+		splitTarget := strings.Split(targetURL, "/")
+		id = splitTarget[len(splitTarget)-1]
+	} else {
+		id = targetURL
+	}
 
-	body, err := json.Marshal(
-		struct {
-			ID string `json:"id"`
-		}{
-			ID: id,
-		},
-	)
+	payload := struct {
+		ID     string `json:"id"`
+		Domain string `json:"domain"`
+	}{}
+
+	payload.ID = id
+
+	if api.CustomDomain != "" {
+		payload.Domain = api.CustomDomain
+	}
+
+	body, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
