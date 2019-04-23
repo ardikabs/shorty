@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// URL represent URL object from API
-type URL struct {
+// URLDefinition represent URL definition from API
+type URLDefinition struct {
 	Count     int64     `json:"count"`
 	CreatedAt time.Time `json:"createdAt"`
 	ID        string    `json:"id"`
@@ -28,7 +28,7 @@ type API struct {
 }
 
 // GetListURL will return list of URL from API
-func (api *API) GetListURL() ([]URL, error) {
+func (api *API) GetListURL() ([]URLDefinition, error) {
 
 	rel := &url.URL{Path: "/api/url/geturls"}
 	u := api.BaseURL.ResolveReference(rel)
@@ -50,8 +50,8 @@ func (api *API) GetListURL() ([]URL, error) {
 	defer resp.Body.Close()
 
 	var urlResult struct {
-		List     []URL `json:"list"`
-		CountAll int64 `json:"countAll"`
+		List     []URLDefinition `json:"list"`
+		CountAll int64           `json:"countAll"`
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&urlResult)
@@ -63,7 +63,7 @@ func (api *API) GetListURL() ([]URL, error) {
 
 // SubmitURL will submit long url and return short url
 // with some optional customization if needed
-func (api *API) SubmitURL(longURL, customURL, password string, reuse bool) (URL, error) {
+func (api *API) SubmitURL(longURL, customURL, password string, reuse bool) (URLDefinition, error) {
 	rel := &url.URL{Path: "/api/url/submit"}
 
 	payload := struct {
@@ -89,13 +89,13 @@ func (api *API) SubmitURL(longURL, customURL, password string, reuse bool) (URL,
 
 	body, err := json.Marshal(payload)
 	if err != nil {
-		return URL{}, err
+		return URLDefinition{}, err
 	}
 
 	u := api.BaseURL.ResolveReference(rel)
 	req, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(body))
 	if err != nil {
-		return URL{}, err
+		return URLDefinition{}, err
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-API-Key", api.APIToken)
@@ -104,19 +104,19 @@ func (api *API) SubmitURL(longURL, customURL, password string, reuse bool) (URL,
 
 	resp, err := api.httpClient.Do(req)
 	if err != nil {
-		return URL{}, err
+		return URLDefinition{}, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return URL{}, errors.New(resp.Status)
+		return URLDefinition{}, errors.New(resp.Status)
 	}
 
-	var url URL
+	var url URLDefinition
 	err = json.NewDecoder(resp.Body).Decode(&url)
 	if err != nil {
-		return URL{}, err
+		return URLDefinition{}, err
 	}
 	return url, nil
 }
