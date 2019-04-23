@@ -1,6 +1,7 @@
 package kutt
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -185,4 +186,40 @@ func TestDeleteURL(t *testing.T) {
 			t.Errorf("expected to get error, but got nothing")
 		}
 	})
+
+	t.Run("custom domain provided but unsuccessful delete url", func(t *testing.T) {
+		customDomain := "custom.example.com"
+
+		handler := func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+
+			payload := struct {
+				ID           string `json:"id"`
+				CustomDomain string `json:"domain"`
+			}{}
+			json.NewDecoder(r.Body).Decode(&payload)
+
+			if payload.CustomDomain != customDomain {
+				t.Errorf("expected %s but got %s", customDomain, customDomain)
+			}
+
+		}
+		s := httptest.NewServer(http.HandlerFunc(handler))
+		defer s.Close()
+
+		u, _ := url.Parse(s.URL)
+		api := API{
+			BaseURL:      &url.URL{Scheme: u.Scheme, Host: u.Host},
+			APIToken:     "true-api-token",
+			CustomDomain: customDomain,
+		}
+
+		err := api.DeleteURL("https://kutt.it/my-google")
+
+		if err == nil {
+			t.Errorf("expected to get error, but got nothing")
+		}
+	})
+
 }
