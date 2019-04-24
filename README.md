@@ -10,105 +10,27 @@ Shorty is an application client to shortener your long url on shortener URL prov
 Basically it just client interact with shortener provider.
 
 ## Installation
-```
-go get -u github.com/ardikabs/shorty
-```
+1. Go installation. Follow this guide [here](https://golang.org/doc/install). Also other setup like GOPATH/GOROOT on your $PATH.
+2. Run this command `go get -u github.com/ardikabs/shorty/app/cli`
+3. Make sure you already follow step #1.
 
 ## Usage
-### `func GetListURL() ([]URLDefinition, error)`
-```golang
+### Setup Environment Variable
+To using this application you need to set environment variable `KUTT_TOKEN`, that variable are API TOKEN from [Kutt](https://kutt.it), you can see on the settings page.
+For other setup, like maybe you already set custom domain on your Kutt account, you need to set environment variable `KUTT_CUSTOM_DOMAIN`.
 
-package main
+### `shorty --help`
+This command will show you all the option and guide to follow this application.
 
-import (
-    "fmt"
-    "log"
+### `shorty list`
+This command will show you list of available urls on the Kutt provider.
 
-    "github.com/ardikabs/shorty/kutt"
-)
+### `shorty submit [url]`
+This command will submit your selected URL to be shorten on Kutt provider.
+__Available flags__: (you can see the explaination [here](https://github.com/thedevs-network/kutt#api))
+1. `-c` or `--customurl`
+1. `-p` or `--password`
+1. `-r` or `--reuse`
 
-func main(){
-
-    api := kutt.API{
-        BaseURL: &url.URL{
-            Scheme: "https",
-            Host: "kutt.it",
-        },
-        APIToken: "your-api-token-here",
-    }
-
-    listURLs, err := api.GetListURL()
-    
-    if err != nill {
-        log.Fatalln(err)
-    }
-
-    fmt.Println(listURLs)
-
-}
-```
-### `func SubmitURL(longURL, customURL, password string, reuse bool) (URLDefinition, error)`
-```golang
-
-package main
-
-import (
-    "fmt"
-    "log"
-
-    "github.com/ardikabs/shorty/kutt"
-)
-
-func main(){
-
-    api := kutt.API{
-        BaseURL: &url.URL{
-            Scheme: "https",
-            Host: "kutt.it",
-        },
-        APIToken: "your-api-token-here",
-    }
-
-    resultURL, err := api.SubmitURL(
-        "https://example.com",
-        "my-custom-example",
-        nil,
-        false,
-    )
-    
-    if err != nill {
-        log.Fatalln(err)
-    }
-
-    fmt.Println(resultURL)
-}
-```
-### `func DeleteURL(targetURL string) error`
-```golang
-
-package main
-
-import (
-    "fmt"
-    "log"
-
-    "github.com/ardikabs/shorty/kutt"
-)
-
-func main(){
-
-    api := kutt.API{
-        BaseURL: &url.URL{
-            Scheme: "https",
-            Host: "kutt.it",
-        },
-        APIToken: "your-api-token-here",
-    }
-
-    err := api.DeleteURL("https://kutt.it/my-example-room")
-    
-    if err != nill {
-        log.Fatalln(err)
-    }
-}
-```
+### `shorty delete [url]`
+This command will delete your selected short URL from Kutt provider
