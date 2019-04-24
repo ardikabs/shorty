@@ -1,0 +1,4 @@
+vendor/
+cover.out
+command/linter/
+*.swp
