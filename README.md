@@ -1,7 +1,7 @@
 # Shorty
 
 ## Description
-Shorty is an application client to shortener your long url on shortener URL provider. Currently only support [kutt](https://kutt.it) provider.
+Shorty is an application client to shortener your long url on shortener URL provider. Currently only support [Kutt](https://kutt.it) provider.
 
 ## Diagram Flow
 ```
@@ -9,28 +9,23 @@ Shorty is an application client to shortener your long url on shortener URL prov
 ```
 Basically it just client interact with shortener provider.
 
-## Installation
-1. Go installation. Follow this guide [here](https://golang.org/doc/install). Also other setup like GOPATH/GOROOT on your $PATH.
-2. Run this command `go get -u github.com/ardikabs/shorty/app/cli`
-3. Make sure you already follow step #1.
+## Development Guide
+### Prerequisites
+* Go 1.11 or later
+### Setup
+* Install Git. [Here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+* Install Go 1.11 or later. [Here](https://golang.org/doc/install)
+* Clone this repo on your `$GOPATH`
+    Run this command `git clone git:github.com/ardikabs/shorty.git`
 
-## Usage
-### Setup Environment Variable
-To using this application you need to set environment variable `KUTT_TOKEN`, that variable are API TOKEN from [Kutt](https://kutt.it), you can see on the settings page.
-For other setup, like maybe you already set custom domain on your Kutt account, you need to set environment variable `KUTT_CUSTOM_DOMAIN`.
+### Build and run binary file
+To build binary file:
+`make build`
 
-### `shorty --help`
-This command will show you all the option and guide to follow this application.
+### Unit Test
+To check the unit test:
+`make test`
 
-### `shorty list`
-This command will show you list of available urls on the Kutt provider.
-
-### `shorty submit [url]`
-This command will submit your selected URL to be shorten on Kutt provider.
-__Available flags__: (you can see the explaination [here](https://github.com/thedevs-network/kutt#api))
-1. `-c` or `--customurl`
-1. `-p` or `--password`
-1. `-r` or `--reuse`
-
-### `shorty delete [url]`
-This command will delete your selected short URL from Kutt provider
+## Installation Guide
+Check the [release page](https://github.com/ardikabs/shorty/releases).
+Please read [user guide](USAGE.md) for further use.
