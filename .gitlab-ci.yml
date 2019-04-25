@@ -8,6 +8,7 @@ variables:
 stages:
   - test
   - build
+  - build-image
 
 before_script:
   - make mod
@@ -31,7 +32,7 @@ compile:
     - master
 
 build-image:
-  stage: build
+  stage: build-image
   image: docker:latest
   dependencies:
     - compile
@@ -41,3 +42,4 @@ build-image:
     - docker push $DOCKER_IMAGE
   only:
     - master
+    - triggers
