@@ -2,14 +2,69 @@ package kutt
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"reflect"
 	"testing"
+	"time"
 )
+
+func TestCall(t *testing.T) {
+	expectedMethod := http.MethodPost
+
+	type payload struct {
+		CustomURL string `json:"customurl"`
+		Target    string `json:"target"`
+	}
+
+	expectedBody := payload{
+		CustomURL: "custom-url",
+		Target:    "https://target.url",
+	}
+
+	handler := func(w http.ResponseWriter, r *http.Request) {
+
+		if r.Method != "POST" {
+			t.Errorf("expected with method %s, but got method %s", expectedMethod, r.Method)
+		}
+
+		reqbody, _ := ioutil.ReadAll(r.Body)
+		var body payload
+		json.Unmarshal(reqbody, &body)
+
+		if !reflect.DeepEqual(body, expectedBody) {
+			t.Errorf("expected %v but got %v", expectedBody, body)
+		}
+
+		w.Write([]byte(`{
+				"count": 2,
+				"createdAt": "2019-04-22T07:52:59.973Z",
+				"id": "learning",
+				"target": "https://www.packtpub.com/packt/offers/free-learning",
+				"password": false,
+				"shortUrl": "http://urls.ardikabs.id/learning"
+			}
+		}`))
+	}
+	s := httptest.NewServer(http.HandlerFunc(handler))
+
+	defer s.Close()
+
+	api := API{
+		BaseURL: s.URL,
+		Token:   "true-api-token",
+		Timeout: 5 * time.Second,
+	}
+
+	customPayload := payload{
+		CustomURL: "custom-url",
+		Target:    "https://target.url",
+	}
+
+	api.Call(http.MethodPost, "/api/test", customPayload)
+}
 
 func TestGetListURL(t *testing.T) {
 	handler := func(w http.ResponseWriter, r *http.Request) {
@@ -41,10 +96,9 @@ func TestGetListURL(t *testing.T) {
 
 	defer s.Close()
 
-	u, _ := url.Parse(s.URL)
 	api := API{
-		BaseURL:  &url.URL{Scheme: u.Scheme, Host: u.Host},
-		APIToken: "true-api-token",
+		BaseURL: s.URL,
+		Token:   "true-api-token",
 	}
 
 	urls, err := api.GetListURL()
@@ -80,10 +134,9 @@ func TestSubmitURL(t *testing.T) {
 
 		defer s.Close()
 
-		u, _ := url.Parse(s.URL)
 		api := API{
-			BaseURL:  &url.URL{Scheme: u.Scheme, Host: u.Host},
-			APIToken: "true-api-token",
+			BaseURL: s.URL,
+			Token:   "true-api-token",
 		}
 
 		customURL := "my-google"
@@ -117,10 +170,9 @@ func TestSubmitURL(t *testing.T) {
 		s := httptest.NewServer(http.HandlerFunc(handler))
 		defer s.Close()
 
-		u, _ := url.Parse(s.URL)
 		api := API{
-			BaseURL:  &url.URL{Scheme: u.Scheme, Host: u.Host},
-			APIToken: "true-api-token",
+			BaseURL: s.URL,
+			Token:   "true-api-token",
 		}
 
 		customURL := "my-google"
@@ -131,14 +183,8 @@ func TestSubmitURL(t *testing.T) {
 			false,
 		)
 
-		want := errors.New("400 Bad Request")
-
 		if err == nil {
 			t.Errorf("expected to get error, but got nothing")
-		}
-
-		if !reflect.DeepEqual(err, want) {
-			t.Errorf("expected %s, got %s", want, err)
 		}
 	})
 
@@ -153,10 +199,9 @@ func TestDeleteURL(t *testing.T) {
 		s := httptest.NewServer(http.HandlerFunc(handler))
 		defer s.Close()
 
-		u, _ := url.Parse(s.URL)
 		api := API{
-			BaseURL:  &url.URL{Scheme: u.Scheme, Host: u.Host},
-			APIToken: "true-api-token",
+			BaseURL: s.URL,
+			Token:   "true-api-token",
 		}
 
 		err := api.DeleteURL("https://kutt.it/my-google")
@@ -174,10 +219,9 @@ func TestDeleteURL(t *testing.T) {
 		s := httptest.NewServer(http.HandlerFunc(handler))
 		defer s.Close()
 
-		u, _ := url.Parse(s.URL)
 		api := API{
-			BaseURL:  &url.URL{Scheme: u.Scheme, Host: u.Host},
-			APIToken: "true-api-token",
+			BaseURL: s.URL,
+			Token:   "true-api-token",
 		}
 
 		err := api.DeleteURL("https://kutt.it/my-google")
@@ -208,10 +252,9 @@ func TestDeleteURL(t *testing.T) {
 		s := httptest.NewServer(http.HandlerFunc(handler))
 		defer s.Close()
 
-		u, _ := url.Parse(s.URL)
 		api := API{
-			BaseURL:      &url.URL{Scheme: u.Scheme, Host: u.Host},
-			APIToken:     "true-api-token",
+			BaseURL:      s.URL,
+			Token:        "true-api-token",
 			CustomDomain: customDomain,
 		}
 
