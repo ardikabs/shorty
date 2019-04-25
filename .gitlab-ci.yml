@@ -2,7 +2,7 @@ image: golang:1.12-stretch
 
 variables:
   APP_NAME: shorty
-  TAG: 0.0.1-alpha
+  TAG: 0.0.1
   DOCKER_IMAGE: ardikabs/$APP_NAME:$TAG
 
 stages:
@@ -27,8 +27,8 @@ compile:
     expire_in: 1 day                                                                           
     paths:
     - deploy/_output
-  # only:
-  #   - master
+  only:
+    - master
 
 build-image:
   stage: build-image
@@ -41,6 +41,6 @@ build-image:
     - docker build -t $DOCKER_IMAGE .
     - docker login -u ardikabs -p $DOCKERHUB_PASS
     - docker push $DOCKER_IMAGE
-  # only:
-  #   - master
-  #   - triggers
+  only:
+    - master
+    - triggers
