@@ -3,18 +3,14 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/url"
 
 	"github.com/ardikabs/shorty/kutt"
 )
 
 func main() {
 	api := kutt.API{
-		BaseURL: &url.URL{
-			Scheme: "https",
-			Host:   "kutt.it",
-		},
-		APIToken:     "YOUR_SECRET_API_TOKEN_NICE",
+		BaseURL:      "https://kutt.it",
+		Token:        "YOUR_SECRET_API_TOKEN_NICE",
 		CustomDomain: "custom.example.com",
 	}
 
