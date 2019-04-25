@@ -1,0 +1,6 @@
+deploy/_output/
+vendor/
+cover.out
+command/linter/
+*.swp
+.env
