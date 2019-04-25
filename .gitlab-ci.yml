@@ -10,19 +10,18 @@ stages:
   - build
   - build-image
 
-before_script:
-  - make mod
-
 test:
   stage: test
   image: golang:1.12-stretch
   script:
+    - make mod
     - make test
 
 compile:
   stage: build
   image: golang:1.12-stretch
   script:
+    - make mod
     - make build
   artifacts:
     expire_in: 1 day                                                                           
