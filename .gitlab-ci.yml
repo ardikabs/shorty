@@ -1,0 +1,20 @@
+stages:
+  - test
+  - build
+
+before_script:
+  - make mod
+
+test:
+  stage: test
+  image: registry.bukalapak.io/sre/gudang/golang:2.1.0
+  script:
+    - make test
+
+build:
+  stage: build
+  image: registry.bukalapak.io/sre/gudang/golang:2.1.0
+  script:
+    - make build
+  only:
+    - master
