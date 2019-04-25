@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -13,28 +14,27 @@ var listCmd = &cobra.Command{
 	Short: "List shorter URL",
 	Long:  "List shorter URL from shortener provider",
 	Args:  cobra.ExactArgs(0),
-	RunE:  listHandler,
+	Run:   listHandler,
 }
 
-func listHandler(cmd *cobra.Command, args []string) error {
+func listHandler(cmd *cobra.Command, args []string) {
 	urls, err := api.GetListURL()
 
 	if err != nil {
-		return err
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	if len(urls) < 1 {
 		fmt.Println("No urls found")
-		return nil
+		os.Exit(0)
 	}
 
-	fmt.Printf("Found %d urls\n\n", len(urls))
+	fmt.Printf("Found %d urls\n", len(urls))
 
 	for _, url := range urls {
-		fmt.Printf("URL ID: %s\n", url.ID)
+		fmt.Printf("\nURL ID: %s\n", url.ID)
 		fmt.Printf("Target URL: %s\n", url.Target)
-		fmt.Printf("Short URL: %s", url.ShortURL)
+		fmt.Printf("Short URL: %s\n", url.ShortURL)
 	}
-
-	return nil
 }

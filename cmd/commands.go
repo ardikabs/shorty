@@ -2,33 +2,36 @@ package cmd
 
 import (
 	"fmt"
-	"net/url"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/ardikabs/shorty/kutt"
 	"github.com/spf13/cobra"
+	"github.com/subosito/gotenv"
 )
 
 var api kutt.API
 
 func init() {
+	gotenv.Load()
+
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(submitCmd)
 	rootCmd.AddCommand(deleteCmd)
 
 	apiToken := os.Getenv("KUTT_TOKEN")
-	if apiToken == "" {
-		fmt.Println("Kutt API Token are not set. 'KUTT_TOKEN'")
-		os.Exit(1)
+	customDomain := os.Getenv("KUTT_CUSTOM_DOMAIN")
+	timeout, err := strconv.Atoi(os.Getenv("KUTT_TIMEOUT"))
+	if err != nil {
+		timeout = 5
 	}
 
 	api = kutt.API{
-		BaseURL: &url.URL{
-			Scheme: "https",
-			Host:   "kutt.it",
-		},
-		APIToken:     apiToken,
-		CustomDomain: os.Getenv("KUTT_CUSTOM_DOMAIN"),
+		BaseURL:      "https://kutt.it",
+		Timeout:      time.Duration(timeout) * time.Second,
+		Token:        apiToken,
+		CustomDomain: customDomain,
 	}
 }
 

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -9,19 +10,19 @@ import (
 func init() {}
 
 var deleteCmd = &cobra.Command{
-	Use:   "delete [url]",
+	Use:   "delete [shortUrl]",
 	Short: "Delete shorter URL",
 	Long:  "Delete shorter URL from shortener provider",
 	Args:  cobra.ExactArgs(1),
-	RunE:  deleteHandler,
+	Run:   deleteHandler,
 }
 
-func deleteHandler(cmd *cobra.Command, args []string) error {
+func deleteHandler(cmd *cobra.Command, args []string) {
 	err := api.DeleteURL(args[0])
 	if err != nil {
-		return err
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	fmt.Printf("Successfully deleted '%s'", args[0])
-	return nil
 }

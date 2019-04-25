@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -18,14 +19,14 @@ func init() {
 }
 
 var submitCmd = &cobra.Command{
-	Use:   "submit [url]",
+	Use:   "submit [longUrl]",
 	Short: "Submit target URL to be shorten",
 	Long:  "Submit target URL to be shorten on shortener provider",
 	Args:  cobra.ExactArgs(1),
-	RunE:  submitHandler,
+	Run:   submitHandler,
 }
 
-func submitHandler(cmd *cobra.Command, args []string) error {
+func submitHandler(cmd *cobra.Command, args []string) {
 	url, err := api.SubmitURL(
 		args[0],
 		customURL,
@@ -33,9 +34,9 @@ func submitHandler(cmd *cobra.Command, args []string) error {
 		reuse,
 	)
 	if err != nil {
-		return err
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	fmt.Printf("Short URL: %s", url.ShortURL)
-	return nil
 }
