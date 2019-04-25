@@ -3,7 +3,7 @@
 You need to have [Kutt][1] account before use this application.
 
 ### Setup Environment Variable
-To using this application you need to set environment variable `KUTT_TOKEN` for [Kutt][1] API Token that you can found [here](https://kutt.it/settings). By default, `shorty` setup for 5 second timeout, if you willing to change less or more you can set environment variable `KUTT_TIMEOUT`
+To using this application you need to set environment variable `KUTT_TOKEN` for [Kutt][1] API Token that you can found [here](https://kutt.it/settings). By default, `shorty` setup for 5 second timeout, if you willing to change less or more you can set environment variable `KUTT_TIMEOUT`.
 In case you already set custom domain on your [Kutt][1] account, you need to set environment variable `KUTT_CUSTOM_DOMAIN` for your custom domain.
 All possible environment variable that can be set showing in `.env.sample`, you can use that by copying with this command `cp .env.sample .env`, then shorty will automatically load up on current directory on file `.env`.
 
