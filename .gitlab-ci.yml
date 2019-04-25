@@ -1,5 +1,10 @@
 image: golang:1.12-stretch
 
+variables:
+  APP_NAME: shorty
+  TAG: 0.0.1
+  DOCKER_IMAGE: $APP_NAME:$TAG
+
 stages:
   - test
   - build
@@ -13,10 +18,26 @@ test:
   script:
     - make test
 
-build:
+compile:
   stage: build
   image: golang:1.12-stretch
   script:
     - make build
+  artifacts:
+    expire_in: 1 day                                                                           
+    paths:
+    - deploy/_output
+  only:
+    - master
+
+build-image:
+  stage: build
+  image: docker:latest
+  dependencies:
+    - compile
+  script:
+    - docker build -t $DOCKER_IMAGE .
+    - docker login -u ardikabs -p '$DOCKERHUB_PASS'
+    - docker push $DOCKER_IMAGE
   only:
     - master
